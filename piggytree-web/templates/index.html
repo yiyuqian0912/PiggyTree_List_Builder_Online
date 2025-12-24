@@ -567,11 +567,6 @@
             text-overflow: ellipsis;
         }
 
-        .entry-line-value {
-            color: var(--accent-blue);
-            font-weight: 600;
-        }
-
         .entry-pick {
             font-weight: 700;
             padding: 0.125rem 0.375rem;
@@ -589,16 +584,9 @@
             color: var(--accent-pink);
         }
 
-        .entry-multiplier-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            margin-left: auto;
-        }
-
-        .entry-multiplier {
-            background: rgba(168, 85, 247, 0.15);
-            color: var(--accent-purple);
+        .entry-line-mode {
+            background: rgba(79, 158, 255, 0.15);
+            color: var(--accent-blue);
             padding: 0.125rem 0.375rem;
             border-radius: 3px;
             font-size: 0.6875rem;
@@ -822,21 +810,16 @@
                 <div class="form-group">
                     <label class="form-label">Line Mode</label>
                     <div class="toggle-group">
-                        <button type="button" class="toggle-btn active" data-mode="Standard" onclick="setLineMode('Standard')">Standard</button>
+                        <button type="button" class="toggle-btn active" data-mode="Line" onclick="setLineMode('Line')">Line</button>
                         <button type="button" class="toggle-btn" data-mode="Max" onclick="setLineMode('Max')">Max</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Line Value</label>
-                    <input type="text" id="lineValue" class="form-input" placeholder="e.g. 25.5">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Pick</label>
-                <div class="toggle-group">
-                    <button type="button" class="toggle-btn active" data-pick="Higher" onclick="setPick('Higher')">↑ Higher</button>
-                    <button type="button" class="toggle-btn" data-pick="Lower" onclick="setPick('Lower')">↓ Lower</button>
+                    <label class="form-label">Pick</label>
+                    <div class="toggle-group">
+                        <button type="button" class="toggle-btn active" data-pick="Higher" onclick="setPick('Higher')">↑ Higher</button>
+                        <button type="button" class="toggle-btn" data-pick="Lower" onclick="setPick('Lower')">↓ Lower</button>
+                    </div>
                 </div>
             </div>
 
@@ -848,11 +831,6 @@
                     <button type="button" class="level-btn" data-level="3" onclick="setLevel(3)">3</button>
                     <button type="button" class="level-btn" data-level="4" onclick="setLevel(4)">4</button>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Multiplier (optional)</label>
-                <input type="text" id="multiplier" class="form-input" placeholder="e.g. 1.5x">
             </div>
 
             <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="addEntry()">
@@ -870,7 +848,6 @@
                     <div class="column-sort-buttons">
                         <button class="sort-btn" onclick="sortColumn(1, 'player')">Name</button>
                         <button class="sort-btn" onclick="sortColumn(1, 'stat')">Stat</button>
-                        <button class="sort-btn" onclick="sortColumn(1, 'multiplier')">Mult</button>
                     </div>
                     <span class="column-count" id="col1Count">0</span>
                 </div>
@@ -886,7 +863,6 @@
                     <div class="column-sort-buttons">
                         <button class="sort-btn" onclick="sortColumn(2, 'player')">Name</button>
                         <button class="sort-btn" onclick="sortColumn(2, 'stat')">Stat</button>
-                        <button class="sort-btn" onclick="sortColumn(2, 'multiplier')">Mult</button>
                     </div>
                     <span class="column-count" id="col2Count">0</span>
                 </div>
@@ -902,7 +878,6 @@
                     <div class="column-sort-buttons">
                         <button class="sort-btn" onclick="sortColumn(3, 'player')">Name</button>
                         <button class="sort-btn" onclick="sortColumn(3, 'stat')">Stat</button>
-                        <button class="sort-btn" onclick="sortColumn(3, 'multiplier')">Mult</button>
                     </div>
                     <span class="column-count" id="col3Count">0</span>
                 </div>
@@ -918,7 +893,6 @@
                     <div class="column-sort-buttons">
                         <button class="sort-btn" onclick="sortColumn(4, 'player')">Name</button>
                         <button class="sort-btn" onclick="sortColumn(4, 'stat')">Stat</button>
-                        <button class="sort-btn" onclick="sortColumn(4, 'multiplier')">Mult</button>
                     </div>
                     <span class="column-count" id="col4Count">0</span>
                 </div>
@@ -937,7 +911,7 @@
         let teams = [];
         let categories = {};
         let editingIndex = null;
-        let currentLineMode = 'Standard';
+        let currentLineMode = 'Line';
         let currentPick = 'Higher';
         let currentLevel = 1;
         let sortState = {};
@@ -1119,10 +1093,10 @@
                 Position: document.getElementById('position').value,
                 Stat: document.getElementById('stat').value,
                 LineMode: currentLineMode,
-                LineValue: document.getElementById('lineValue').value.trim() || '-',
+                LineValue: '-',
                 Pick: currentPick,
                 Level: currentLevel,
-                Multiplier: document.getElementById('multiplier').value.trim() || ''
+                Multiplier: ''
             };
 
             if (!entry.Player) {
@@ -1168,10 +1142,8 @@
             document.getElementById('position').value = entry.Position || 'Quarterback (QB)';
             updateStatOptions();
             document.getElementById('stat').value = entry.Stat || '';
-            document.getElementById('lineValue').value = entry.LineValue || '';
-            document.getElementById('multiplier').value = entry.Multiplier || '';
 
-            setLineMode(entry.LineMode || 'Standard');
+            setLineMode(entry.LineMode || 'Line');
             setPick(entry.Pick || 'Higher');
             setLevel(parseInt(entry.Level) || 1);
 
@@ -1240,20 +1212,9 @@
         // Sort Column
         function sortColumn(level, sortBy) {
             const currentSort = sortState[level];
-            let newDirection;
-            if (sortBy === 'multiplier') {
-                newDirection = (currentSort?.by === sortBy && currentSort?.dir === 'asc') ? 'desc' : 'asc';
-            } else {
-                newDirection = (currentSort?.by === sortBy && currentSort?.dir === 'asc') ? 'desc' : 'asc';
-            }
+            let newDirection = (currentSort?.by === sortBy && currentSort?.dir === 'asc') ? 'desc' : 'asc';
             sortState[level] = { by: sortBy, dir: newDirection };
             renderColumns();
-        }
-
-        function parseMultiplier(mult) {
-            if (!mult) return 0;
-            const num = parseFloat(mult.toString().replace('x', '').replace('X', ''));
-            return isNaN(num) ? 0 : num;
         }
 
         // Render Columns
@@ -1284,14 +1245,6 @@
                                 valB = b.Stat; 
                                 cmp = valA.localeCompare(valB);
                                 break;
-                            case 'multiplier':
-                                valA = parseMultiplier(a.Multiplier);
-                                valB = parseMultiplier(b.Multiplier);
-                                if (valA === 0 && valB === 0) cmp = 0;
-                                else if (valA === 0) cmp = 1;
-                                else if (valB === 0) cmp = -1;
-                                else cmp = valA - valB;
-                                break;
                             default: 
                                 return 0;
                         }
@@ -1318,19 +1271,6 @@
                     `;
                 } else {
                     column.innerHTML = levelData.map(entry => {
-                        let multiplierDisplay = '';
-                        if (entry.Multiplier) {
-                            multiplierDisplay = `
-                                <div class="entry-multiplier-wrapper">
-                                    <span class="entry-multiplier">${entry.Multiplier}</span>
-                                </div>
-                            `;
-                        }
-                        
-                        const lineDisplay = entry.LineValue && entry.LineValue !== '-' 
-                            ? `<span class="entry-line-value">${entry.LineValue}</span>` 
-                            : '';
-                        
                         return `
                             <div class="entry-card" 
                                  draggable="true" 
@@ -1346,9 +1286,8 @@
                                 </div>
                                 <div class="entry-line-2">
                                     <span class="entry-stat" title="${entry.Stat}">${entry.Stat}</span>
-                                    ${lineDisplay}
+                                    <span class="entry-line-mode">${entry.LineMode || 'Line'}</span>
                                     <span class="entry-pick ${entry.Pick.toLowerCase()}">${entry.Pick === 'Higher' ? '↑' : '↓'}</span>
-                                    ${multiplierDisplay}
                                 </div>
                             </div>
                         `;
@@ -1374,8 +1313,6 @@
             document.getElementById('playerName').value = '';
             document.getElementById('playerTeam').value = '';
             document.getElementById('oppTeam').value = '';
-            document.getElementById('lineValue').value = '';
-            document.getElementById('multiplier').value = '';
             document.getElementById('lookupStatus').style.display = 'none';
             document.getElementById('multiplePlayers').style.display = 'none';
             editingIndex = null;
