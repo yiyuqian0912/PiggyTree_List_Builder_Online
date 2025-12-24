@@ -10,6 +10,12 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 # ========================================
+# Configuration
+# ========================================
+# Set your passcode here or use environment variable
+PASSCODE = os.environ.get('PIGGYTREE_PASSCODE', 'ztxisgenius')
+
+# ========================================
 # Data Storage (use environment variable for persistence path)
 # ========================================
 DATA_DIR = os.environ.get('DATA_DIR', '.')
@@ -322,6 +328,14 @@ def get_nfl_player_info(player_name: str):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/api/verify-passcode", methods=["POST"])
+def verify_passcode():
+    data = request.json
+    passcode = data.get("passcode", "")
+    if passcode == PASSCODE:
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 401
 
 @app.route("/api/lookup-player", methods=["POST"])
 def lookup_player():
