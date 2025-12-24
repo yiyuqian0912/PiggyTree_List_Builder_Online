@@ -30,6 +30,142 @@
             box-sizing: border-box;
         }
 
+        /* Login Overlay */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            background-image: 
+                radial-gradient(ellipse at 20% 0%, rgba(0, 255, 135, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+            border-radius: 16px;
+        }
+
+        .login-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(0, 255, 135, 0.1);
+        }
+
+        .login-input::placeholder {
+            letter-spacing: normal;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, var(--accent-green), #00cc6a);
+            border: none;
+            border-radius: 8px;
+            color: var(--bg-dark);
+            font-family: 'Manrope', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 135, 0.3);
+        }
+
+        .login-error {
+            color: var(--accent-pink);
+            font-size: 0.8125rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
+        .login-input-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .login-input-wrapper .login-input {
+            margin-bottom: 0;
+            padding-right: 3rem;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent-green);
+        }
+
         body {
             font-family: 'Manrope', sans-serif;
             background: var(--bg-dark);
@@ -63,12 +199,14 @@
         .logo-icon {
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, var(--accent-green), var(--accent-gold));
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo-text {
@@ -719,9 +857,24 @@
     </style>
 </head>
 <body>
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <img src="/static/logo.jpg" alt="PiggyTree" class="login-logo">
+            <h1 class="login-title">PIGGYTREE</h1>
+            <p class="login-subtitle">Enter passcode to continue</p>
+            <div class="login-input-wrapper">
+                <input type="password" class="login-input" id="passcodeInput" placeholder="••••••" maxlength="20" autofocus>
+                <button type="button" class="toggle-password" onclick="togglePassword()" title="Show/Hide password">👁</button>
+            </div>
+            <button class="login-btn" onclick="checkPasscode()">Enter</button>
+            <p class="login-error" id="loginError">Incorrect passcode</p>
+        </div>
+    </div>
+
     <header class="header">
         <div class="logo">
-            <div class="logo-icon">🐷</div>
+            <div class="logo-icon"><img src="/static/logo.jpg" alt="PiggyTree"></div>
             <span class="logo-text">PIGGYTREE</span>
         </div>
         <div class="header-actions">
@@ -810,8 +963,8 @@
                 <div class="form-group">
                     <label class="form-label">Line Mode</label>
                     <div class="toggle-group">
-                        <button type="button" class="toggle-btn active" data-mode="Line" onclick="setLineMode('Line')">Line</button>
-                        <button type="button" class="toggle-btn" data-mode="Max" onclick="setLineMode('Max')">Max</button>
+                        <button type="button" class="toggle-btn" data-mode="Line" onclick="setLineMode('Line')">Line</button>
+                        <button type="button" class="toggle-btn active" data-mode="Max" onclick="setLineMode('Max')">Max</button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -906,17 +1059,88 @@
     <input type="file" id="fileInput" accept=".json,.csv" style="display: none;" onchange="handleFileLoad(event)">
 
     <script>
+        // Check if already logged in
+        if (sessionStorage.getItem('piggytree_auth') === 'true') {
+            document.getElementById('loginOverlay').classList.add('hidden');
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const input = document.getElementById('passcodeInput');
+            const btn = document.querySelector('.toggle-password');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁';
+            }
+        }
+
+        // Passcode check via API
+        async function checkPasscode() {
+            const input = document.getElementById('passcodeInput');
+            const error = document.getElementById('loginError');
+            const btn = document.querySelector('.login-btn');
+            
+            btn.textContent = 'Checking...';
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch('/api/verify-passcode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passcode: input.value })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    sessionStorage.setItem('piggytree_auth', 'true');
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                } else {
+                    error.classList.add('show');
+                    input.value = '';
+                    input.focus();
+                    setTimeout(() => error.classList.remove('show'), 2000);
+                }
+            } catch (err) {
+                error.textContent = 'Connection error';
+                error.classList.add('show');
+                setTimeout(() => {
+                    error.textContent = 'Incorrect passcode';
+                    error.classList.remove('show');
+                }, 2000);
+            }
+            
+            btn.textContent = 'Enter';
+            btn.disabled = false;
+        }
+
+        // Enter key to submit passcode
+        document.getElementById('passcodeInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkPasscode();
+        });
+
         // State
         let entries = [];
         let teams = [];
         let categories = {};
         let editingIndex = null;
-        let currentLineMode = 'Line';
+        let currentLineMode = 'Max';
         let currentPick = 'Higher';
         let currentLevel = 1;
         let sortState = {};
         let lookupTimeout = null;
         let draggedIndex = null;
+
+        // Default stats per position
+        const DEFAULT_STATS = {
+            'Quarterback (QB)': 'passing_yds',
+            'Running Back (RB)': 'rushing_yds',
+            'Wide Receiver (WR)': 'receiving_rec',
+            'NBA Player': 'points'
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1058,6 +1282,12 @@
 
             statSelect.innerHTML = '<option value="">Select stat...</option>' + 
                 stats.map(s => `<option value="${s}">${s}</option>`).join('');
+            
+            // Set default stat if defined
+            const defaultStat = DEFAULT_STATS[position];
+            if (defaultStat && stats.includes(defaultStat)) {
+                statSelect.value = defaultStat;
+            }
         }
 
         document.getElementById('position').addEventListener('change', updateStatOptions);
