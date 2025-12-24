@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiggyTree - Entry Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0e14;
+            --bg-card: #131a24;
+            --bg-input: #1a2332;
+            --accent-green: #00ff87;
+            --accent-gold: #ffd700;
+            --accent-pink: #ff4f8b;
+            --accent-blue: #4f9eff;
+            --accent-purple: #a855f7;
+            --text-primary: #ffffff;
+            --text-secondary: #8b9cb3;
+            --border-color: #2a3a4d;
+            --level-1: #00ff87;
+            --level-2: #4f9eff;
+            --level-3: #ffd700;
+            --level-4: #ff4f8b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 20% 0%, rgba(0, 255, 135, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+        }
+
+        /* Header */
+        .header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(19, 26, 36, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-gold));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .logo-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.75rem;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-green), #00cc6a);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 135, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-green);
+        }
+
+        .btn-danger {
+            background: rgba(255, 79, 139, 0.15);
+            color: var(--accent-pink);
+            border: 1px solid rgba(255, 79, 139, 0.3);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-gold), #ffaa00);
+            color: var(--bg-dark);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            padding: 0.75rem 2rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8125rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1800px;
+            margin: 0 auto;
+            height: calc(100vh - 140px);
+            overflow: hidden;
+        }
+
+        /* Form Panel */
+        .form-panel {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            width: 320px;
+            flex-shrink: 0;
+            max-height: 100%;
+            overflow-y: auto;
+            align-self: start;
+        }
+
+        .form-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-title::before {
+            content: '';
+            width: 3px;
+            height: 20px;
+            background: var(--accent-green);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 0.375rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(0, 255, 135, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .spinner {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent-green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .spinner.active {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .lookup-status {
+            font-size: 0.75rem;
+            margin-top: 0.375rem;
+            display: none;
+        }
+
+        .lookup-status.success {
+            color: var(--accent-green);
+            display: block;
+        }
+
+        .lookup-status.error {
+            color: var(--accent-pink);
+            display: block;
+        }
+
+        .lookup-status.multiple {
+            color: var(--accent-gold);
+            display: block;
+        }
+
+        .multiple-players {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: var(--bg-input);
+            border-radius: 6px;
+        }
+
+        .player-option {
+            padding: 0.375rem 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            transition: all 0.2s ease;
+        }
+
+        .player-option:hover {
+            background: var(--bg-card);
+            color: var(--accent-green);
+        }
+
+        /* Radio/Toggle Groups */
+        .toggle-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .toggle-btn.active {
+            background: rgba(0, 255, 135, 0.15);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .toggle-btn:hover:not(.active) {
+            border-color: var(--text-secondary);
+        }
+
+        /* Level Selector */
+        .level-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .level-btn {
+            padding: 0.5rem;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .level-btn.active {
+            color: var(--bg-dark);
+        }
+
+        .level-btn[data-level="1"].active {
+            background: var(--level-1);
+            border-color: var(--level-1);
+        }
+
+        .level-btn[data-level="2"].active {
+            background: var(--level-2);
+            border-color: var(--level-2);
+        }
+
+        .level-btn[data-level="3"].active {
+            background: var(--level-3);
+            border-color: var(--level-3);
+        }
+
+        .level-btn[data-level="4"].active {
+            background: var(--level-4);
+            border-color: var(--level-4);
+        }
+
+        /* Columns Container */
+        .columns-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            min-width: 0;
+            height: 100%;
+        }
+
+        .level-column {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .column-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .column-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.125rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .column-title .level-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .level-column:nth-child(1) .level-dot { background: var(--level-1); }
+        .level-column:nth-child(2) .level-dot { background: var(--level-2); }
+        .level-column:nth-child(3) .level-dot { background: var(--level-3); }
+        .level-column:nth-child(4) .level-dot { background: var(--level-4); }
+
+        .column-count {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--bg-input);
+            padding: 0.25rem 0.625rem;
+            border-radius: 20px;
+        }
+
+        .column-sort-buttons {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .sort-btn {
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-size: 0.625rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sort-btn:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .sort-btn.active {
+            background: rgba(0, 255, 135, 0.15);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .column-body {
+            flex: 1;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        /* Custom scrollbar */
+        .column-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .column-body::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 3px;
+        }
+
+        .column-body::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .column-body::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Entry Cards */
+        .entry-card {
+            background: var(--bg-input);
+            border-radius: 8px;
+            padding: 0.75rem;
+            cursor: grab;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .entry-card:hover {
+            border-color: var(--border-color);
+            transform: translateY(-1px);
+        }
+
+        .entry-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .entry-line-1 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.375rem;
+        }
+
+        .drag-handle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: grab;
+        }
+
+        .entry-player {
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .entry-delete {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.25rem;
+            border-radius: 3px;
+            opacity: 0;
+            transition: all 0.15s ease;
+        }
+
+        .entry-card:hover .entry-delete {
+            opacity: 1;
+        }
+
+        .entry-delete:hover {
+            color: var(--accent-pink);
+            background: rgba(255, 79, 139, 0.15);
+        }
+
+        .entry-line-2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .entry-stat {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .entry-line-value {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .entry-pick {
+            font-weight: 700;
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+            font-size: 0.6875rem;
+        }
+
+        .entry-pick.higher {
+            background: rgba(0, 255, 135, 0.15);
+            color: var(--accent-green);
+        }
+
+        .entry-pick.lower {
+            background: rgba(255, 79, 139, 0.15);
+            color: var(--accent-pink);
+        }
+
+        .entry-multiplier-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-left: auto;
+        }
+
+        .entry-multiplier {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--accent-purple);
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+        }
+
+        .column-body.drag-active {
+            background: rgba(0, 255, 135, 0.02);
+            outline: 2px dashed var(--accent-green);
+            outline-offset: -2px;
+        }
+
+        /* Empty Column */
+        .empty-column {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-height: 200px;
+            border: 2px dashed transparent;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .column-body.drag-active .empty-column {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 135, 0.03);
+        }
+
+        .empty-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        /* Autocomplete */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .autocomplete-list.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 0.625rem 0.875rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--bg-input);
+            color: var(--accent-green);
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.875rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            margin-top: 0.5rem;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            font-size: 0.875rem;
+        }
+
+        .toast.success { border-color: var(--accent-green); }
+        .toast.error { border-color: var(--accent-pink); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+                min-height: calc(100vh - 140px);
+                overflow: auto;
+            }
+
+            .form-panel {
+                width: 100%;
+                max-height: none;
+            }
+
+            .columns-container {
+                grid-template-columns: 1fr;
+                min-height: 600px;
+            }
+
+            .level-column {
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🐷</div>
+            <span class="logo-text">PIGGYTREE</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="loadFromFile()">📁 Load</button>
+            <button class="btn btn-secondary" onclick="clearAllEntries()">🗑️ Clear All</button>
+            <button class="btn btn-gold" onclick="exportCSV()">📊 Export CSV</button>
+        </div>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-label">Total Entries:</span>
+            <span class="stat-value" id="totalEntries">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Level 1:</span>
+            <span class="stat-value" id="level1Count">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Level 2:</span>
+            <span class="stat-value" id="level2Count">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Level 3:</span>
+            <span class="stat-value" id="level3Count">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Level 4:</span>
+            <span class="stat-value" id="level4Count">0</span>
+        </div>
+    </div>
+
+    <main class="main-container">
+        <aside class="form-panel">
+            <h2 class="form-title">Add Entry</h2>
+
+            <div class="form-group">
+                <label class="form-label">Player Name</label>
+                <div class="input-wrapper">
+                    <input type="text" id="playerName" class="form-input" placeholder="e.g. LeBron James">
+                    <div class="spinner" id="playerSpinner"></div>
+                </div>
+                <div class="lookup-status" id="lookupStatus"></div>
+                <div class="multiple-players" id="multiplePlayers" style="display: none;"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Team</label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="playerTeam" class="form-input" placeholder="Team">
+                        <div class="autocomplete-list" id="teamAutocomplete"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Opponent</label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="oppTeam" class="form-input" placeholder="Opponent">
+                        <div class="autocomplete-list" id="oppAutocomplete"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Position</label>
+                    <select id="position" class="form-select">
+                        <option value="Quarterback (QB)">Quarterback (QB)</option>
+                        <option value="Running Back (RB)">Running Back (RB)</option>
+                        <option value="Wide Receiver (WR)">Wide Receiver (WR)</option>
+                        <option value="Kicker (K)">Kicker (K)</option>
+                        <option value="NBA Player">NBA Player</option>
+                        <option value="MLB Player">MLB Player</option>
+                        <option value="NFL Defense Player">NFL Defense Player</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stat</label>
+                    <select id="stat" class="form-select">
+                        <option value="">Select stat...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Line Mode</label>
+                    <div class="toggle-group">
+                        <button type="button" class="toggle-btn active" data-mode="Standard" onclick="setLineMode('Standard')">Standard</button>
+                        <button type="button" class="toggle-btn" data-mode="Max" onclick="setLineMode('Max')">Max</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Line Value</label>
+                    <input type="text" id="lineValue" class="form-input" placeholder="e.g. 25.5">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Pick</label>
+                <div class="toggle-group">
+                    <button type="button" class="toggle-btn active" data-pick="Higher" onclick="setPick('Higher')">↑ Higher</button>
+                    <button type="button" class="toggle-btn" data-pick="Lower" onclick="setPick('Lower')">↓ Lower</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Level</label>
+                <div class="level-selector">
+                    <button type="button" class="level-btn active" data-level="1" onclick="setLevel(1)">1</button>
+                    <button type="button" class="level-btn" data-level="2" onclick="setLevel(2)">2</button>
+                    <button type="button" class="level-btn" data-level="3" onclick="setLevel(3)">3</button>
+                    <button type="button" class="level-btn" data-level="4" onclick="setLevel(4)">4</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Multiplier (optional)</label>
+                <input type="text" id="multiplier" class="form-input" placeholder="e.g. 1.5x">
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="addEntry()">
+                ➕ Add Entry
+            </button>
+        </aside>
+
+        <div class="columns-container">
+            <div class="level-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="level-dot"></span>
+                        Level 1
+                    </div>
+                    <div class="column-sort-buttons">
+                        <button class="sort-btn" onclick="sortColumn(1, 'player')">Name</button>
+                        <button class="sort-btn" onclick="sortColumn(1, 'stat')">Stat</button>
+                        <button class="sort-btn" onclick="sortColumn(1, 'multiplier')">Mult</button>
+                    </div>
+                    <span class="column-count" id="col1Count">0</span>
+                </div>
+                <div class="column-body" id="column1"></div>
+            </div>
+
+            <div class="level-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="level-dot"></span>
+                        Level 2
+                    </div>
+                    <div class="column-sort-buttons">
+                        <button class="sort-btn" onclick="sortColumn(2, 'player')">Name</button>
+                        <button class="sort-btn" onclick="sortColumn(2, 'stat')">Stat</button>
+                        <button class="sort-btn" onclick="sortColumn(2, 'multiplier')">Mult</button>
+                    </div>
+                    <span class="column-count" id="col2Count">0</span>
+                </div>
+                <div class="column-body" id="column2"></div>
+            </div>
+
+            <div class="level-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="level-dot"></span>
+                        Level 3
+                    </div>
+                    <div class="column-sort-buttons">
+                        <button class="sort-btn" onclick="sortColumn(3, 'player')">Name</button>
+                        <button class="sort-btn" onclick="sortColumn(3, 'stat')">Stat</button>
+                        <button class="sort-btn" onclick="sortColumn(3, 'multiplier')">Mult</button>
+                    </div>
+                    <span class="column-count" id="col3Count">0</span>
+                </div>
+                <div class="column-body" id="column3"></div>
+            </div>
+
+            <div class="level-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="level-dot"></span>
+                        Level 4
+                    </div>
+                    <div class="column-sort-buttons">
+                        <button class="sort-btn" onclick="sortColumn(4, 'player')">Name</button>
+                        <button class="sort-btn" onclick="sortColumn(4, 'stat')">Stat</button>
+                        <button class="sort-btn" onclick="sortColumn(4, 'multiplier')">Mult</button>
+                    </div>
+                    <span class="column-count" id="col4Count">0</span>
+                </div>
+                <div class="column-body" id="column4"></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <input type="file" id="fileInput" accept=".json,.csv" style="display: none;" onchange="handleFileLoad(event)">
+
+    <script>
+        // State
+        let entries = [];
+        let teams = [];
+        let categories = {};
+        let editingIndex = null;
+        let currentLineMode = 'Standard';
+        let currentPick = 'Higher';
+        let currentLevel = 1;
+        let sortState = {};
+        let lookupTimeout = null;
+        let draggedIndex = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadTeams();
+            await loadCategories();
+            await loadEntries();
+            setupAutocomplete();
+            setupPlayerLookup();
+        });
+
+        // Load Data
+        async function loadTeams() {
+            const res = await fetch('/api/teams');
+            teams = await res.json();
+        }
+
+        async function loadCategories() {
+            const res = await fetch('/api/categories');
+            categories = await res.json();
+            updateStatOptions();
+        }
+
+        async function loadEntries() {
+            const res = await fetch('/api/entries');
+            entries = await res.json();
+            renderColumns();
+        }
+
+        // Autocomplete Setup
+        function setupAutocomplete() {
+            const teamInput = document.getElementById('playerTeam');
+            const oppInput = document.getElementById('oppTeam');
+            const teamList = document.getElementById('teamAutocomplete');
+            const oppList = document.getElementById('oppAutocomplete');
+
+            function setupInput(input, list) {
+                input.addEventListener('focus', () => showSuggestions(input, list));
+                input.addEventListener('input', () => showSuggestions(input, list));
+                input.addEventListener('blur', () => setTimeout(() => list.classList.remove('show'), 150));
+            }
+
+            function showSuggestions(input, list) {
+                const val = input.value.toLowerCase();
+                const filtered = teams.filter(t => t.toLowerCase().includes(val)).slice(0, 8);
+                
+                if (filtered.length === 0) {
+                    list.classList.remove('show');
+                    return;
+                }
+
+                list.innerHTML = filtered.map(t => 
+                    `<div class="autocomplete-item" onmousedown="selectTeam('${input.id}', '${t}')">${t}</div>`
+                ).join('');
+                list.classList.add('show');
+            }
+
+            setupInput(teamInput, teamList);
+            setupInput(oppInput, oppList);
+        }
+
+        function selectTeam(inputId, team) {
+            document.getElementById(inputId).value = team;
+        }
+
+        // Player Lookup
+        function setupPlayerLookup() {
+            const input = document.getElementById('playerName');
+            input.addEventListener('input', () => {
+                clearTimeout(lookupTimeout);
+                lookupTimeout = setTimeout(() => lookupPlayer(input.value), 500);
+            });
+        }
+
+        async function lookupPlayer(name) {
+            if (name.length < 2) return;
+
+            const spinner = document.getElementById('playerSpinner');
+            const status = document.getElementById('lookupStatus');
+            const multipleDiv = document.getElementById('multiplePlayers');
+
+            spinner.classList.add('active');
+            status.style.display = 'none';
+            multipleDiv.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/lookup-player', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ player_name: name })
+                });
+
+                const data = await res.json();
+                spinner.classList.remove('active');
+
+                if (data.error) {
+                    status.textContent = data.error;
+                    status.className = 'lookup-status error';
+                } else if (data.multiple) {
+                    status.textContent = 'Multiple players found:';
+                    status.className = 'lookup-status multiple';
+                    multipleDiv.style.display = 'block';
+                    multipleDiv.innerHTML = data.multiple.map(p => 
+                        `<div class="player-option" onclick="selectPlayer('${p.name}')">${p.name} (${p.team})</div>`
+                    ).join('');
+                } else {
+                    fillPlayerData(data);
+                    status.textContent = `✓ Found: ${data.player} - ${data.team}`;
+                    status.className = 'lookup-status success';
+                }
+            } catch (err) {
+                spinner.classList.remove('active');
+                status.textContent = 'Lookup failed';
+                status.className = 'lookup-status error';
+            }
+        }
+
+        function selectPlayer(name) {
+            document.getElementById('playerName').value = name;
+            document.getElementById('multiplePlayers').style.display = 'none';
+            lookupPlayer(name);
+        }
+
+        function fillPlayerData(data) {
+            document.getElementById('playerName').value = data.player || '';
+            document.getElementById('playerTeam').value = data.team || '';
+            document.getElementById('oppTeam').value = data.next_opponent || '';
+            
+            if (data.position) {
+                document.getElementById('position').value = data.position;
+                updateStatOptions();
+            }
+        }
+
+        // Update Stats based on Position
+        function updateStatOptions() {
+            const position = document.getElementById('position').value;
+            const statSelect = document.getElementById('stat');
+            const stats = categories[position] || [];
+
+            statSelect.innerHTML = '<option value="">Select stat...</option>' + 
+                stats.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        document.getElementById('position').addEventListener('change', updateStatOptions);
+
+        // Form Controls
+        function setLineMode(mode) {
+            currentLineMode = mode;
+            document.querySelectorAll('.toggle-btn[data-mode]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+        }
+
+        function setPick(pick) {
+            currentPick = pick;
+            document.querySelectorAll('.toggle-btn[data-pick]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.pick === pick);
+            });
+        }
+
+        function setLevel(level) {
+            currentLevel = level;
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.level) === level);
+            });
+        }
+
+        // Add/Edit Entry
+        async function addEntry() {
+            const entry = {
+                Player: document.getElementById('playerName').value.trim(),
+                PlayerTeam: document.getElementById('playerTeam').value.trim(),
+                OppTeam: document.getElementById('oppTeam').value.trim(),
+                Position: document.getElementById('position').value,
+                Stat: document.getElementById('stat').value,
+                LineMode: currentLineMode,
+                LineValue: document.getElementById('lineValue').value.trim() || '-',
+                Pick: currentPick,
+                Level: currentLevel,
+                Multiplier: document.getElementById('multiplier').value.trim() || ''
+            };
+
+            if (!entry.Player) {
+                showToast('Please enter a player name', 'error');
+                return;
+            }
+
+            if (!entry.Stat) {
+                showToast('Please select a stat', 'error');
+                return;
+            }
+
+            if (editingIndex !== null) {
+                entry.id = editingIndex;
+            }
+
+            try {
+                const res = await fetch('/api/entries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(entry)
+                });
+
+                const data = await res.json();
+                entries = data.entries;
+                renderColumns();
+                clearForm();
+                showToast(editingIndex !== null ? 'Entry updated!' : 'Entry added!', 'success');
+                editingIndex = null;
+            } catch (err) {
+                showToast('Failed to save entry', 'error');
+            }
+        }
+
+        // Edit Entry
+        function editEntry(index) {
+            const entry = entries[index];
+            if (!entry) return;
+
+            document.getElementById('playerName').value = entry.Player || '';
+            document.getElementById('playerTeam').value = entry.PlayerTeam || '';
+            document.getElementById('oppTeam').value = entry.OppTeam || '';
+            document.getElementById('position').value = entry.Position || 'Quarterback (QB)';
+            updateStatOptions();
+            document.getElementById('stat').value = entry.Stat || '';
+            document.getElementById('lineValue').value = entry.LineValue || '';
+            document.getElementById('multiplier').value = entry.Multiplier || '';
+
+            setLineMode(entry.LineMode || 'Standard');
+            setPick(entry.Pick || 'Higher');
+            setLevel(parseInt(entry.Level) || 1);
+
+            editingIndex = index;
+            showToast('Editing entry - make changes and click Add', 'success');
+        }
+
+        // Delete Entry
+        async function deleteEntry(index, event) {
+            event.stopPropagation();
+            
+            try {
+                await fetch(`/api/entries/${index}`, { method: 'DELETE' });
+                await loadEntries();
+                showToast('Entry deleted', 'success');
+            } catch (err) {
+                showToast('Failed to delete entry', 'error');
+            }
+        }
+
+        // Drag and Drop
+        function handleDragStart(event, index) {
+            draggedIndex = index;
+            event.target.classList.add('dragging');
+            event.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(event) {
+            event.target.classList.remove('dragging');
+            document.querySelectorAll('.column-body').forEach(col => col.classList.remove('drag-active'));
+        }
+
+        function handleDragOver(event, level) {
+            event.preventDefault();
+            event.currentTarget.classList.add('drag-active');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('drag-active');
+        }
+
+        async function handleDrop(event, newLevel) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-active');
+
+            if (draggedIndex === null) return;
+
+            const entry = entries[draggedIndex];
+            if (entry && entry.Level !== newLevel) {
+                entry.Level = newLevel;
+                entry.id = draggedIndex;
+
+                await fetch('/api/entries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(entry)
+                });
+
+                await loadEntries();
+                showToast(`Moved to Level ${newLevel}`, 'success');
+            }
+
+            draggedIndex = null;
+        }
+
+        // Sort Column
+        function sortColumn(level, sortBy) {
+            const currentSort = sortState[level];
+            let newDirection;
+            if (sortBy === 'multiplier') {
+                newDirection = (currentSort?.by === sortBy && currentSort?.dir === 'asc') ? 'desc' : 'asc';
+            } else {
+                newDirection = (currentSort?.by === sortBy && currentSort?.dir === 'asc') ? 'desc' : 'asc';
+            }
+            sortState[level] = { by: sortBy, dir: newDirection };
+            renderColumns();
+        }
+
+        function parseMultiplier(mult) {
+            if (!mult) return 0;
+            const num = parseFloat(mult.toString().replace('x', '').replace('X', ''));
+            return isNaN(num) ? 0 : num;
+        }
+
+        // Render Columns
+        function renderColumns() {
+            const levelEntries = { 1: [], 2: [], 3: [], 4: [] };
+            
+            entries.forEach((entry, index) => {
+                const level = parseInt(entry.Level) || 1;
+                if (levelEntries[level]) {
+                    levelEntries[level].push({ ...entry, originalIndex: index });
+                }
+            });
+
+            // Apply sorting
+            for (let level = 1; level <= 4; level++) {
+                const sort = sortState[level];
+                if (sort) {
+                    levelEntries[level].sort((a, b) => {
+                        let valA, valB, cmp;
+                        switch (sort.by) {
+                            case 'player': 
+                                valA = a.Player; 
+                                valB = b.Player; 
+                                cmp = valA.localeCompare(valB);
+                                break;
+                            case 'stat': 
+                                valA = a.Stat; 
+                                valB = b.Stat; 
+                                cmp = valA.localeCompare(valB);
+                                break;
+                            case 'multiplier':
+                                valA = parseMultiplier(a.Multiplier);
+                                valB = parseMultiplier(b.Multiplier);
+                                if (valA === 0 && valB === 0) cmp = 0;
+                                else if (valA === 0) cmp = 1;
+                                else if (valB === 0) cmp = -1;
+                                else cmp = valA - valB;
+                                break;
+                            default: 
+                                return 0;
+                        }
+                        return sort.dir === 'asc' ? cmp : -cmp;
+                    });
+                }
+            }
+
+            // Render each column
+            for (let level = 1; level <= 4; level++) {
+                const column = document.getElementById(`column${level}`);
+                const countEl = document.getElementById(`col${level}Count`);
+                const levelData = levelEntries[level];
+                
+                countEl.textContent = levelData.length;
+
+                if (levelData.length === 0) {
+                    column.innerHTML = `
+                        <div class="empty-column">
+                            <div class="empty-icon">📋</div>
+                            <div>No Level ${level} entries</div>
+                            <div style="font-size: 0.6875rem; margin-top: 0.5rem; opacity: 0.6;">Drag entries here</div>
+                        </div>
+                    `;
+                } else {
+                    column.innerHTML = levelData.map(entry => {
+                        let multiplierDisplay = '';
+                        if (entry.Multiplier) {
+                            multiplierDisplay = `
+                                <div class="entry-multiplier-wrapper">
+                                    <span class="entry-multiplier">${entry.Multiplier}</span>
+                                </div>
+                            `;
+                        }
+                        
+                        const lineDisplay = entry.LineValue && entry.LineValue !== '-' 
+                            ? `<span class="entry-line-value">${entry.LineValue}</span>` 
+                            : '';
+                        
+                        return `
+                            <div class="entry-card" 
+                                 draggable="true" 
+                                 data-index="${entry.originalIndex}"
+                                 data-level="${level}"
+                                 ondragstart="handleDragStart(event, ${entry.originalIndex})"
+                                 ondragend="handleDragEnd(event)"
+                                 onclick="editEntry(${entry.originalIndex})">
+                                <div class="entry-line-1">
+                                    <span class="drag-handle">⠿</span>
+                                    <span class="entry-player" title="${entry.Player}">${entry.Player}</span>
+                                    <button class="entry-delete" onclick="deleteEntry(${entry.originalIndex}, event)" title="Delete">✕</button>
+                                </div>
+                                <div class="entry-line-2">
+                                    <span class="entry-stat" title="${entry.Stat}">${entry.Stat}</span>
+                                    ${lineDisplay}
+                                    <span class="entry-pick ${entry.Pick.toLowerCase()}">${entry.Pick === 'Higher' ? '↑' : '↓'}</span>
+                                    ${multiplierDisplay}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Add drop zone listeners
+                column.ondragover = (e) => handleDragOver(e, level);
+                column.ondragleave = (e) => handleDragLeave(e);
+                column.ondrop = (e) => handleDrop(e, level);
+            }
+
+            // Update stats bar
+            document.getElementById('totalEntries').textContent = entries.length;
+            document.getElementById('level1Count').textContent = levelEntries[1].length;
+            document.getElementById('level2Count').textContent = levelEntries[2].length;
+            document.getElementById('level3Count').textContent = levelEntries[3].length;
+            document.getElementById('level4Count').textContent = levelEntries[4].length;
+        }
+
+        // Clear Form
+        function clearForm() {
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerTeam').value = '';
+            document.getElementById('oppTeam').value = '';
+            document.getElementById('lineValue').value = '';
+            document.getElementById('multiplier').value = '';
+            document.getElementById('lookupStatus').style.display = 'none';
+            document.getElementById('multiplePlayers').style.display = 'none';
+            editingIndex = null;
+        }
+
+        // Clear All Entries
+        async function clearAllEntries() {
+            if (!confirm('Are you sure you want to delete ALL entries?')) return;
+            
+            for (let i = entries.length - 1; i >= 0; i--) {
+                await fetch(`/api/entries/${i}`, { method: 'DELETE' });
+            }
+            
+            await loadEntries();
+            showToast('All entries cleared', 'success');
+        }
+
+        // Export CSV
+        function exportCSV() {
+            if (entries.length === 0) {
+                showToast('No entries to export', 'error');
+                return;
+            }
+            window.location.href = '/api/export-csv';
+            showToast('Downloading CSV...', 'success');
+        }
+
+        // Load from File
+        function loadFromFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        async function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    let data;
+                    if (file.name.endsWith('.json')) {
+                        data = JSON.parse(e.target.result);
+                    } else if (file.name.endsWith('.csv')) {
+                        data = parseCSV(e.target.result);
+                    }
+
+                    if (Array.isArray(data)) {
+                        for (const entry of data) {
+                            await fetch('/api/entries', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(entry)
+                            });
+                        }
+                        await loadEntries();
+                        showToast(`Loaded ${data.length} entries`, 'success');
+                    }
+                } catch (err) {
+                    showToast('Failed to load file', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
+            
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const values = line.split(',').map(v => v.trim());
+                const obj = {};
+                headers.forEach((h, i) => obj[h] = values[i] || '');
+                return obj;
+            });
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${type === 'success' ? '✓' : '✗'}</span><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
